@@ -10,7 +10,7 @@ from setuptools import setup, find_packages
 setup(
     name='keylib',
     version='0.1.2',
-    url='https://github.com/blockstack/keylib-py',
+    url='https://github.com/DillonEnge/keylib-py',
     license='MIT',
     author='Blockstack Developers',
     author_email='hello@onename.com',
