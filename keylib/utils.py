@@ -6,7 +6,7 @@ COMPRESSED_PUBLIC_KEY_MAGIC_BYTES = ['\x02', '\x03']
 
 
 def is_secret_exponent(val, curve_order):
-    return (isinstance(val, (int, long)) and val >= 1 and val < curve_order)
+    return (isinstance(val, (int)) and val >= 1 and val < curve_order)
 
 
 def is_hex_ecdsa_pubkey(val):

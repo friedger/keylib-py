@@ -137,9 +137,9 @@ if is_python3:
     def random_string(x):
         return str(os.urandom(x))
 else:
-    string_types = (str, unicode)
+    string_types = (str)
     string_or_bytes_types = string_types
-    int_types = (int, float, long)
+    int_types = (int, float)
 
     # Base switching
     code_strings = {

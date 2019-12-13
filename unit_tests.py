@@ -1,7 +1,7 @@
 import json
 import unittest
 import traceback
-from test import test_support
+from test import support
 
 from keylib import (
     b58check_encode, b58check_decode, b58check_unpack,
@@ -269,7 +269,7 @@ class AddressCheckTest(unittest.TestCase):
 
 
 def test_main():
-    test_support.run_unittest(
+    support.run_unittest(
         ECPrivateKeyUncompressedTest,
         ECPrivateKeyCompressedTest,
         ECPrivateKeyFromWIF,
