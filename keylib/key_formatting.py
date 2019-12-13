@@ -6,6 +6,7 @@ import hmac
 import base64
 import hashlib
 import binascii
+from typing import Dict
 
 is_python2 = sys.version_info.major == 2
 is_python3 = sys.version_info.major == 3
@@ -21,42 +22,43 @@ secp256k1 = {
 }
 
 
-if is_python3:
+# if is_python3: FIXME
+if True:
     string_types = (str)
     string_or_bytes_types = (str, bytes)
     int_types = (int, float)
 
     # Base switching
-    code_strings = {
-        2: '01',
-        10: '0123456789',
-        16: '0123456789abcdef',
-        32: 'abcdefghijklmnopqrstuvwxyz234567',
-        58: '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz',
-        256: ''.join([chr(x) for x in range(256)])
+    code_strings: Dict[int, bytes] = {
+        2: b'01',
+        10: b'0123456789',
+        16: b'0123456789abcdef',
+        32: b'abcdefghijklmnopqrstuvwxyz234567',
+        58: b'123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz',
+        256: b''.join([bytes((x,)) for x in range(256)])
     }
 
-    def bin_dbl_sha256(s):
+    def bin_dbl_sha256(s: bytes) -> bytes:
         bytes_to_hash = from_string_to_bytes(s)
         return hashlib.sha256(hashlib.sha256(bytes_to_hash).digest()).digest()
 
-    def lpad(msg, symbol, length):
+    def lpad(msg: bytes, symbol: bytes, length: int) -> bytes:
         if len(msg) >= length:
             return msg
         return symbol * (length - len(msg)) + msg
 
-    def get_code_string(base):
+    def get_code_string(base: int) -> bytes:
         if base in code_strings:
             return code_strings[base]
         else:
             raise ValueError("Invalid base!")
 
-    def changebase(string, frm, to, minlen=0):
+    def changebase(string: bytes, frm: int, to: int, minlen: int = 0):
         if frm == to:
             return lpad(string, get_code_string(frm)[0], minlen)
         return encode(decode(string, frm), to, minlen)
 
-    def bin_to_b58check(inp, magicbyte=0):
+    def bin_to_b58check(inp: bytes, magicbyte: int = 0):
         inp_fmtd = from_int_to_byte(int(magicbyte))+inp
 
         leadingzbytes = 0
@@ -68,29 +70,29 @@ if is_python3:
         checksum = bin_dbl_sha256(inp_fmtd)[:4]
         return '1' * leadingzbytes + changebase(inp_fmtd+checksum, 256, 58)
 
-    def bytes_to_hex_string(b):
+    def bytes_to_hex_string(b) -> bytes:
         if isinstance(b, str):
             return b
 
-        return ''.join('{:02x}'.format(y) for y in b)
+        return ''.join('{:02x}'.format(y) for y in b).encode()
 
-    def safe_from_hex(s):
+    def safe_from_hex(s) -> bytes:
         return bytes.fromhex(s)
 
-    def from_int_representation_to_bytes(a):
+    def from_int_representation_to_bytes(a) -> bytes:
         return bytes(str(a), 'utf-8')
 
-    def from_int_to_byte(a):
+    def from_int_to_byte(a) -> bytes:
         return bytes([a])
 
-    def from_byte_to_int(a):
+    def from_byte_to_int(a) -> int:
         return a
 
     def from_string_to_bytes(a):
         return a if isinstance(a, bytes) else bytes(a, 'utf-8')
 
-    def safe_hexlify(a):
-        return str(binascii.hexlify(a), 'utf-8')
+    def safe_hexlify(a: bytes) -> bytes:
+        return str(binascii.hexlify(a), 'utf-8').encode()
 
     def encode(val, base, minlen=0):
         base, minlen = int(base), int(minlen)

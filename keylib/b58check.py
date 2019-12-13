@@ -14,16 +14,16 @@ from utilitybelt import change_charset
 from .hashing import bin_checksum
 
 
-HEX_KEYSPACE = "0123456789abcdef"
-B58_KEYSPACE = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+HEX_KEYSPACE = b"0123456789abcdef"
+B58_KEYSPACE = b"123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 
 
-def b58check_encode(bin_s, version_byte=0):
+def b58check_encode(bin_s: bytes, version_byte: int = 0) -> bytes:
     """ Takes in a binary string and converts it to a base 58 check string. """
     # append the version byte to the beginning
-    bin_s = chr(int(version_byte)) + bin_s
+    bin_s = bytes((int(version_byte))) + bin_s
     # calculate the number of leading zeros
-    num_leading_zeros = len(re.match(r'^\x00*', bin_s).group(0))
+    num_leading_zeros = len(re.match(rb'^\x00*', bin_s).group(0))
     # add in the checksum add the end
     bin_s = bin_s + bin_checksum(bin_s)
     # convert from b2 to b16
@@ -34,7 +34,7 @@ def b58check_encode(bin_s, version_byte=0):
     return B58_KEYSPACE[0] * num_leading_zeros + b58_s
 
 
-def b58check_unpack(b58_s):
+def b58check_unpack(b58_s) -> (int, bytes, bytes):
     """ Takes in a base 58 check string and returns: the version byte, the
         original encoded binary string, and the checksum.
     """
@@ -60,7 +60,7 @@ def b58check_unpack(b58_s):
     return version_byte, encoded_value, checksum
 
 
-def b58check_decode(b58_s):
+def b58check_decode(b58_s) -> bytes:
     """ Takes in a base 58 check string and returns the original encoded binary
         string.
     """
@@ -68,14 +68,14 @@ def b58check_decode(b58_s):
     return encoded_value
 
 
-def b58check_version_byte(b58_s):
+def b58check_version_byte(b58_s) -> int:
     """ Takes in a base 58 check string and returns the version byte as an
         integer. """
     version_byte, encoded_value, checksum = b58check_unpack(b58_s)
     return ord(version_byte)
 
 
-def is_b58check(b58_s):
+def is_b58check(b58_s) -> bool:
     version_byte, binary_s, checksum = b58check_unpack(b58_s)
     return (b58_s == b58check_encode(
         binary_s, version_byte=ord(version_byte)))
