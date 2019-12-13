@@ -64,7 +64,7 @@ class ECPrivateKey():
             return encode_privkey(
                 self._ecdsa_private_key.to_string(), 'hex_compressed')
         else:
-            return hexlify(self.to_bin())
+            return hexlify(self.to_bin()).decode("utf-8")
 
     def to_wif(self):
         if self._compressed:
@@ -75,10 +75,10 @@ class ECPrivateKey():
                 self.to_bin(), version_byte=self.wif_version_byte())
 
     def to_pem(self):
-        return self._ecdsa_private_key.to_pem()
+        return self._ecdsa_private_key.to_pem().decode("utf-8")
 
     def to_der(self):
-        return hexlify(self._ecdsa_private_key.to_der())
+        return hexlify(self._ecdsa_private_key.to_der()).decode("utf-8")
 
     def public_key(self):
         # lazily calculate and set the public key

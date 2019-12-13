@@ -59,7 +59,7 @@ class ECPublicKey():
         return self._bin_public_key
 
     def to_hex(self):
-        return hexlify(self.to_bin())
+        return hexlify(self.to_bin()).decode("utf-8")
 
     def to_pem(self):
         return self._ecdsa_public_key.to_pem()
@@ -69,14 +69,14 @@ class ECPublicKey():
 
     def bin_hash160(self):
         if not hasattr(self, '_bin_hash160'):
-            binary_key = self.to_bin()  
+            binary_key = self.to_bin()
             if self._type == PubkeyType.compressed:
                 binary_key = compress(binary_key)
             self._bin_hash160 = bin_hash160(binary_key)
         return self._bin_hash160
 
     def hash160(self):
-        return hexlify(self.bin_hash160())
+        return hexlify(self.bin_hash160()).decode("utf-8")
 
     def address(self):
         return bin_hash160_to_address(

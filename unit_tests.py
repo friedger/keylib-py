@@ -188,10 +188,10 @@ class BitcoinUncompressedPublicKeyTest(unittest.TestCase):
         self.assertEqual(self.public_key.address(), self.ref['address'])
 
     def test_hex_hash160(self):
-        self.assertEqual(self.public_key.hash160(), self.ref['hex_hash160'])
+        self.assertEqual(self.public_key.hash160() , self.ref['hex_hash160'])
 
     def test_hex_public_key(self):
-        self.assertEqual(self.public_key.to_hex(), self.ref['hex_public_key'])
+        self.assertEqual(self.public_key.to_hex() , self.ref['hex_public_key'])
 
     def test_pem_public_key(self):
         self.assertEqual(self.public_key.to_pem(), self.ref['pem_public_key'])
@@ -212,7 +212,7 @@ class BitcoinCompressedPublicKeyTest(unittest.TestCase):
         self.assertEqual(self.public_key.address(), self.ref['address'])
 
     def test_bin_hash160(self):
-        self.assertEqual(self.public_key.bin_hash160(), self.ref['bin_hash160'])
+        self.assertEqual(self.public_key.bin_hash160() , self.ref['bin_hash160'])
 
     def test_hex_hash160(self):
         self.assertEqual(self.public_key.hash160(), self.ref['hex_hash160'])
