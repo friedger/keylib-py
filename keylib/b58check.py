@@ -8,6 +8,7 @@
 """
 
 import re
+from typing import Tuple
 from binascii import hexlify, unhexlify
 from hashlib import sha256
 from utilitybelt import change_charset
@@ -23,22 +24,31 @@ def b58check_encode(bin_s: bytes, version_byte: int = 0) -> bytes:
     # append the version byte to the beginning
     bin_s = bytes((int(version_byte))) + bin_s
     # calculate the number of leading zeros
-    num_leading_zeros = len(re.match(rb'^\x00*', bin_s).group(0))
+    leading_zeros = re.match(rb'^\x00*', bin_s)
+    if (leading_zeros is None):
+        num_leading_zeros = 0
+    else:
+        num_leading_zeros = len(leading_zeros.group(0))
     # add in the checksum add the end
     bin_s = bin_s + bin_checksum(bin_s)
     # convert from b2 to b16
     hex_s = hexlify(bin_s)
+    print(hex_s, hex_s.decode("ascii"))
     # convert from b16 to b58
     b58_s = change_charset(hex_s, HEX_KEYSPACE, B58_KEYSPACE)
 
     return B58_KEYSPACE[0] * num_leading_zeros + b58_s
 
 
-def b58check_unpack(b58_s) -> (int, bytes, bytes):
+def b58check_unpack(b58_s: str) -> Tuple[bytes, bytes, bytes]:
     """ Takes in a base 58 check string and returns: the version byte, the
         original encoded binary string, and the checksum.
     """
-    num_leading_zeros = len(re.match(r'^1*', b58_s).group(0))
+    leading_zeros=re.match(r'^1*', b58_s)
+    if (leading_zeros is None):
+      num_leading_zeros = 0
+    else:
+      num_leading_zeros = len(leading_zeros.group(0))
     # convert from b58 to b16
     hex_s = change_charset(b58_s, B58_KEYSPACE, HEX_KEYSPACE)
     # if an odd number of hex characters are present, add a zero to the front
@@ -47,7 +57,7 @@ def b58check_unpack(b58_s) -> (int, bytes, bytes):
     # convert from b16 to b2
     bin_s = unhexlify(hex_s)
     # add in the leading zeros
-    bin_s = '\x00' * num_leading_zeros + bin_s
+    bin_s = b'\x00' * num_leading_zeros + bin_s
     # make sure the newly calculated checksum equals the embedded checksum
     newly_calculated_checksum = bin_checksum(bin_s[:-4])
     embedded_checksum = bin_s[-4:]

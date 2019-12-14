@@ -7,6 +7,7 @@ import base64
 import hashlib
 import binascii
 from typing import Dict
+from typing import Type
 
 is_python2 = sys.version_info.major == 2
 is_python3 = sys.version_info.major == 3
@@ -24,7 +25,7 @@ secp256k1 = {
 
 # if is_python3: FIXME
 if True:
-    string_types = (str)
+    string_types = (str, bytes)
     string_or_bytes_types = (str, bytes)
     int_types = (int, float)
 
@@ -55,7 +56,7 @@ if True:
 
     def changebase(string: bytes, frm: int, to: int, minlen: int = 0):
         if frm == to:
-            return lpad(string, get_code_string(frm)[0], minlen)
+            return lpad(string, bytes([get_code_string(frm)[0]]), minlen)
         return encode(decode(string, frm), to, minlen)
 
     def bin_to_b58check(inp: bytes, magicbyte: int = 0):
@@ -71,7 +72,7 @@ if True:
         return '1' * leadingzbytes + changebase(inp_fmtd+checksum, 256, 58)
 
     def bytes_to_hex_string(b) -> bytes:
-        if isinstance(b, str):
+        if isinstance(b, bytes):
             return b
 
         return ''.join('{:02x}'.format(y) for y in b).encode()
@@ -100,7 +101,7 @@ if True:
         result_bytes = bytes()
         while val > 0:
             curcode = code_string[val % base]
-            result_bytes = bytes([ord(curcode)]) + result_bytes
+            result_bytes = bytes([curcode]) + result_bytes
             val //= base
 
         pad_size = minlen - len(result_bytes)
@@ -126,7 +127,7 @@ if True:
                 return d
         else:
             def extract(d, cs):
-                return cs.find(d if isinstance(d, str) else chr(d))
+                return cs.find(d.encode("utf-8"))
 
         if base == 16:
             string = string.lower()
@@ -139,7 +140,7 @@ if True:
     def random_string(x):
         return str(os.urandom(x))
 else:
-    string_types = (str)
+    string_types = (str, bytes)
     string_or_bytes_types = string_types
     int_types = (int, float)
 
@@ -162,7 +163,7 @@ else:
             return msg
         return symbol * (length - len(msg)) + msg
 
-    def get_code_string(base):
+    def get_code_string(base: int) -> str:
         if base in code_strings:
             return code_strings[base]
         else:
@@ -228,9 +229,6 @@ else:
         return os.urandom(x)
 
 
-def bin_dbl_sha256(s):
-    bytes_to_hash = from_string_to_bytes(s)
-    return hashlib.sha256(hashlib.sha256(bytes_to_hash).digest()).digest()
 
 
 def b58check_to_bin(inp):

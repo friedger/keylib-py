@@ -234,7 +234,7 @@ class BitcoinB58CheckTest(unittest.TestCase):
         pass
 
     def test_b58check_encode_then_decode(self):
-        bin_private_key = self.ref['hex_private_key'].decode('hex')
+        bin_private_key = self.ref['hex_private_key']
         wif_private_key = b58check_encode(
             bin_private_key, version_byte=self.ref['wif_version_byte'])
         self.assertEqual(self.ref['wif_private_key'], wif_private_key)
